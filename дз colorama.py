@@ -1,6 +1,10 @@
 import colorama
+import inspect
 from colorama import init, Fore, Back, Style
 
+print(inspect.ismodule(colorama))
+print(inspect.isclass(colorama))
+print(inspect.isfunction(colorama))
 init(autoreset=True)
 print("init(autoreset=True) потрібне для того, щоб минулі маніпуляції з текстом не впливали на наступні. Також можна використовувати Style.RESET_ALL, але це займає багато часу")
 print(f"{Style.BRIGHT}Жирний шрифт")
