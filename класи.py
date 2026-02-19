@@ -1,4 +1,24 @@
 import random
+import logging
+
+logging.basicConfig(
+    filename="tuk.tuk",
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    encoding="utf-8"
+)
+
+def log_error(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logging.error(f"Помилка у функції {func.__name__}: {e}", exc_info=True)
+            print(f"!!! Сталася помилка. Подробиці у файлі tuk.tuk")
+            raise e
+    return wrapper
+
+
 class Human:
     def __init__(self, name="Human", job=None, home=None, car=None):
         self.name = name
@@ -100,6 +120,8 @@ class Human:
         if self.money < -500:
             print("Bankrupt...")
             return False
+        return True
+    @log_error
     def live(self, day):
         if self.is_alive() == False:
             return False
@@ -143,59 +165,53 @@ class Human:
         elif dice == 4:
             print("Time for treats!")
             self.shopping(manage="delicacies")
+job_list = {
+    "Java developer":
+        {"salary": 50, "gladness_less": 10},
+    "Python developer":
+        {"salary": 40, "gladness_less": 3},
+    "C++ developer":
+        {"salary": 45, "gladness_less": 25},
+    "Rust developer":
+        {"salary": 70, "gladness_less": 1},
+}
+brands_of_car = {
+    "BMW": {"fuel": 100, "strength": 100,
+            "consumption": 6},
+    "Lada": {"fuel": 50, "strength": 40,
+            "consumption": 10},
+    "Volvo": {"fuel": 70, "strength": 150,
+            "consumption": 8},
+    "Ferrari": {"fuel": 80, "strength": 120,
+            "consumption": 14},
+}
+class Auto:
+    def __init__(self, brand_list):
+        self.brand = random.choice(list(brand_list))
+        self.fuel = brand_list[self.brand]["fuel"]
+        self.strength = brand_list[self.brand]["strength"]
+        self.consumption = brand_list[self.brand]["consumption"]
 
-        class Auto:
-            def __init__(self, brand_list):
-                self.brand = random.choice(list(brand_list))
-                self.fuel = brand_list[self.brand]["fuel"]
-                self.strength = brand_list[self.brand]["strength"]
-                self.consumption = brand_list[self.brand]["consumption"]
+    def drive(self):
+        if self.strength > 0 and self.fuel >= self.consumption:
+            self.fuel -= self.consumption
+            self.strength -= 1
+            return True
+        else:
+            print("The car cannot move")
+            return False
 
-            def drive(self):
-                if self.strength > 0 and self.fuel >= self.consumption:
-                    self.fuel -= self.consumption
-                    self.strength -= 1
-                    return True
-                else:
-                    print("The car cannot move")
-                    return False
+class House:
+    def __init__(self):
+        self.mess = 0
+        self.food = 0
 
-        class House:
-            def __init__(self):
-                self.mess = 0
-                self.food = 0
 
-        job_list = {
-            "Java developer":
-                {"salary": 50, "gladness_less": 10},
-            "Python developer":
-                {"salary": 40, "gladness_less": 3},
-            "C++ developer":
-                {"salary": 45, "gladness_less": 25},
-            "Rust developer":
-                {"salary": 70, "gladness_less": 1},
-        }
-        brands_of_car = {
-            "BMW": {"fuel": 100, "strength": 100,
-                    "consumption": 6},
-            "Lada": {"fuel": 50, "strength": 40,
-                     "consumption": 10},
-            "Volvo": {"fuel": 70, "strength": 150,
-                      "consumption": 8},
-            "Ferrari": {"fuel": 80, "strength": 120,
-                        "consumption": 14},
-        }
-
-        class Job:
-            def __init__(self, job_list):
-                self.job = random.choice(list(job_list))
-                self.salary = job_list[self.job]["salary"]
-                self.gladness_less = job_list[self.job]["gladness_less"]
-
-        kate = Human(name="Kate")
-        for day in range(1, 8):
-            if kate.live(day) == False:
-                break
+class Job:
+    def __init__(self, job_list):
+        self.job = random.choice(list(job_list))
+        self.salary = job_list[self.job]["salary"]
+        self.gladness_less = job_list[self.job]["gladness_less"]
 class Pet:
     def __init__(self, species="Кролик"):
         self.species = species
@@ -215,3 +231,7 @@ class Pet:
             self.hunger -= 15
         else:
             print("Нема їжі, треба йти купляти.")
+kate = Human(name="Kate")
+for day in range(1, 8):
+    if kate.live(day) == False:
+        break
